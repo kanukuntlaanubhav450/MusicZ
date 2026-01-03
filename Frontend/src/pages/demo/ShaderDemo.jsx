@@ -1,5 +1,5 @@
 import React from 'react';
-import ElectricWavesShader from '../components/ui/ElectricWavesShader';
+import ElectricWavesShader from '../../components/ui/ElectricWavesShader';
 
 export default function ShaderDemo() {
     return (
