@@ -13,8 +13,10 @@ const Search = React.lazy(() => import('./pages/search/Search'));
 const Library = React.lazy(() => import('./pages/library/Library'));
 const Podcasts = React.lazy(() => import('./pages/podcasts/Podcasts'));
 const PodcastDetail = React.lazy(() => import('./pages/podcasts/PodcastDetail'));
+
 const PlaylistDetail = React.lazy(() => import('./pages/playlist/PlaylistDetail'));
 const AdminUpload = React.lazy(() => import('./pages/admin/AdminUpload'));
+const ShaderDemo = React.lazy(() => import('./pages/demo/ShaderDemo'));
 
 function App() {
   const [user, setUser] = useState(null);
@@ -44,6 +46,7 @@ function App() {
             <Route path="/podcast/:id" element={user ? <PodcastDetail /> : <Navigate to="/login" />} />
             <Route path="/playlist/:id" element={user ? <PlaylistDetail /> : <Navigate to="/login" />} />
             <Route path="/admin/upload" element={user ? <AdminUpload /> : <Navigate to="/login" />} />
+            <Route path="/shader-demo" element={<ShaderDemo />} />
           </Routes>
         </Suspense>
       </Router>

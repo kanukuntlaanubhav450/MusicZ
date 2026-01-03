@@ -10,6 +10,7 @@ const categoryRoutes = require('./routes/category.routes');
 const searchRoutes = require('./routes/search.routes');
 const libraryRoutes = require('./routes/library.routes');
 const playlistRoutes = require('./routes/playlist.routes');
+const { proxyAudio, proxyAudioOptions } = require('./controllers/audio.proxy');
 
 const app = express();
 
@@ -26,6 +27,8 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/library', libraryRoutes);
 app.use('/api/playlists', playlistRoutes);
+app.options('/api/proxy/audio', proxyAudioOptions); // CORS preflight
+app.get('/api/proxy/audio', proxyAudio);
 // app.use('/api/admin', adminRoutes);
 
 // Error Handler

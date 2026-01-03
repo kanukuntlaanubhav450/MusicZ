@@ -12,6 +12,12 @@ export const AudioProvider = ({ children }) => {
     const [volume, setVolume] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
 
+    // Visualizer State
+    const [analyser, setAnalyser] = useState(null);
+    const [frequencyData, setFrequencyData] = useState(null);
+    // Computed frequency bands for shader
+    const [audioData, setAudioData] = useState({ bass: 0, mid: 0, high: 0, energy: 0 });
+
     const audioRef = useRef(null);
 
     const playTrack = (track) => {
@@ -70,7 +76,63 @@ export const AudioProvider = ({ children }) => {
         }
     }, [volume]);
 
-    // --- Persistence Logic ---
+    // Initialize Web Audio API IMMEDIATELY on mount - BEFORE any audio loads
+    useEffect(() => {
+        if (!audioRef.current) return;
+
+        // Create AudioContext and connect to audio element BEFORE any src is loaded
+        const setupAudioContext = () => {
+            if (audioRef.current._audioContextSetup) return; // Already set up
+
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const newAnalyser = audioCtx.createAnalyser();
+
+                // Enhanced FFT settings
+                newAnalyser.fftSize = 1024; // More frequency bins for better resolution
+                newAnalyser.smoothingTimeConstant = 0.3; // More reactive
+                newAnalyser.minDecibels = -90;
+                newAnalyser.maxDecibels = -10;
+
+                // Create MediaElementSource BEFORE audio loads
+                const source = audioCtx.createMediaElementSource(audioRef.current);
+                source.connect(newAnalyser);
+                newAnalyser.connect(audioCtx.destination);
+
+                const bufferLength = newAnalyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+
+                setAnalyser(newAnalyser);
+                setFrequencyData(dataArray);
+
+                // Mark as set up to prevent re-initialization
+                audioRef.current._audioContextSetup = true;
+                audioRef.current._audioContext = audioCtx;
+
+                console.log('AudioContext initialized successfully, frequencyBinCount:', bufferLength);
+            } catch (e) {
+                console.error("Web Audio API Init Error:", e);
+            }
+        };
+
+        // Set up immediately
+        setupAudioContext();
+
+        // Resume AudioContext on play (for browser autoplay policy)
+        const handlePlay = () => {
+            if (audioRef.current._audioContext?.state === 'suspended') {
+                audioRef.current._audioContext.resume();
+            }
+        };
+
+        audioRef.current.addEventListener('play', handlePlay);
+
+        return () => {
+            if (audioRef.current) {
+                audioRef.current.removeEventListener('play', handlePlay);
+            }
+        };
+    }, []);
 
     // 1. Load State on Mount
     useEffect(() => {
@@ -156,6 +218,12 @@ export const AudioProvider = ({ children }) => {
         localStorage.removeItem('musicstreamz_history'); // Optional: remove this if you want to keep history
     };
 
+    // Memoize the audio source to prevent re-reloading on every render (due to Date.now())
+    const distinctAudioSrc = React.useMemo(() => {
+        if (!currentTrack?.audioUrl) return undefined;
+        return `http://localhost:5000/api/proxy/audio?url=${encodeURIComponent(currentTrack.audioUrl)}&t=${Date.now()}`;
+    }, [currentTrack?.id, currentTrack?.audioUrl]);
+
     return (
         <AudioContext.Provider value={{
             currentTrack,
@@ -169,20 +237,42 @@ export const AudioProvider = ({ children }) => {
             setVolume,
             closePlayer,
             resetPlayer,
-            isLoading
+            isLoading,
+            analyser,
+            frequencyData,
+            audioData,
+            setAudioData
         }}>
             {children}
             <audio
-                key={currentTrack?.id}
                 ref={audioRef}
-                src={currentTrack?.audioUrl}
+                src={distinctAudioSrc}
                 preload="auto"
                 onTimeUpdate={handleTimeUpdate}
                 onLoadedMetadata={handleLoadedMetadata}
                 onEnded={handleEnded}
                 onWaiting={() => setIsLoading(true)}
-                onCanPlay={() => setIsLoading(false)}
                 onPlaying={() => setIsLoading(false)}
+                onError={(e) => {
+                    console.error("Audio playback error", e);
+                    const audio = e.target;
+                    console.error("Error details:", {
+                        code: audio.error ? audio.error.code : 'unknown',
+                        message: audio.error ? audio.error.message : 'unknown',
+                        src: audio.src,
+                        networkState: audio.networkState,
+                        readyState: audio.readyState
+                    });
+                    setIsLoading(false);
+                }}
+                onLoadStart={() => console.log("Audio load start:", currentTrack?.audioUrl)}
+                onCanPlay={() => {
+                    console.log("Audio can play");
+                    setIsLoading(false);
+                }}
+                onPlay={() => console.log("Audio play started")}
+                onPause={() => console.log("Audio paused")}
+                crossOrigin="anonymous" // Enable CORS for Web Audio API
             />
         </AudioContext.Provider>
     );
