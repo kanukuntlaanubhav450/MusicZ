@@ -1,9 +1,13 @@
 const logger = require('../utils/logger');
-const { errorResponse } = require('../utils/response');
 
 const errorHandler = (err, req, res, next) => {
     logger.error(err.message, err);
-    return errorResponse(res, err.message || "Server Error", 500, err);
+    res.status(500).json({
+        success: false,
+        message: err.message || "Server Error",
+        error: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
 };
 
 module.exports = errorHandler;
+
