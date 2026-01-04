@@ -5,6 +5,7 @@ import { useAudio } from '../../context/AudioContext';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import EditPlaylistModal from '../../components/common/EditPlaylistModal';
+import { API_URL } from '../../config/api';
 
 const PlaylistDetail = () => {
     const { id } = useParams();
@@ -17,7 +18,7 @@ const PlaylistDetail = () => {
 
     const fetchPlaylist = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/api/playlists/${id}`);
+            const res = await fetch(`${API_URL}/api/playlists/${id}`);
             if (!res.ok) throw new Error('Failed to fetch playlist');
             const data = await res.json();
             setPlaylist(data);
@@ -35,7 +36,7 @@ const PlaylistDetail = () => {
     const handleDeletePlaylist = async () => {
         console.log("Attempting to delete playlist:", id);
         try {
-            const res = await fetch(`http://localhost:5000/api/playlists/${id}`, { method: 'DELETE' });
+            const res = await fetch(`${API_URL}/api/playlists/${id}`, { method: 'DELETE' });
             console.log("Delete response status:", res.status);
             if (res.ok) {
                 console.log("Delete successful, redirecting...");
@@ -64,7 +65,7 @@ const PlaylistDetail = () => {
         }));
 
         try {
-            const res = await fetch(`http://localhost:5000/api/playlists/${id}`, {
+            const res = await fetch(`${API_URL}/api/playlists/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: newName })
@@ -90,7 +91,7 @@ const PlaylistDetail = () => {
     const handleRemoveTrack = async (e, trackId) => {
         e.stopPropagation();
         try {
-            const res = await fetch(`http://localhost:5000/api/playlists/${id}/tracks/${trackId}`, {
+            const res = await fetch(`${API_URL}/api/playlists/${id}/tracks/${trackId}`, {
                 method: 'DELETE'
             });
             if (res.ok) {

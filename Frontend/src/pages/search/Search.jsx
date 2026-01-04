@@ -4,6 +4,7 @@ import Layout from '../../components/layout/Layout';
 import { useAudio } from '../../context/AudioContext';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import AddToPlaylistModal from '../../components/common/AddToPlaylistModal';
+import { API_URL } from '../../config/api';
 
 const Search = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -38,7 +39,7 @@ const Search = () => {
 
             setLoading(true);
             try {
-                const res = await fetch(`http://localhost:5000/api/search?q=${encodeURIComponent(query)}`);
+                const res = await fetch(`${API_URL}/api/search?q=${encodeURIComponent(query)}`);
                 if (!res.ok) throw new Error('Search failed');
                 const data = await res.json();
                 setResults(data);

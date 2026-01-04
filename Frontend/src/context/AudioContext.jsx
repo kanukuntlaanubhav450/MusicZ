@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
+import { API_URL } from '../config/api';
 
 const AudioContext = createContext();
 
@@ -221,7 +222,7 @@ export const AudioProvider = ({ children }) => {
     // Memoize the audio source to prevent re-reloading on every render (due to Date.now())
     const distinctAudioSrc = React.useMemo(() => {
         if (!currentTrack?.audioUrl) return undefined;
-        return `http://localhost:5000/api/proxy/audio?url=${encodeURIComponent(currentTrack.audioUrl)}&t=${Date.now()}`;
+        return `${API_URL}/api/proxy/audio?url=${encodeURIComponent(currentTrack.audioUrl)}&t=${Date.now()}`;
     }, [currentTrack?.id, currentTrack?.audioUrl]);
 
     return (

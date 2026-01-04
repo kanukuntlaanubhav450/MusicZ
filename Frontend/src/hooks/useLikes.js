@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
+import { API_URL } from '../config/api';
 
 export const useLikes = () => {
     const [likedTrackIds, setLikedTrackIds] = useState(new Set());
@@ -7,7 +8,7 @@ export const useLikes = () => {
 
     const fetchLikedSongs = useCallback(async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/playlists/liked');
+            const res = await fetch(`${API_URL}/api/playlists/liked`);
             if (res.ok) {
                 const data = await res.json();
                 const ids = new Set((data.tracks || []).map(t => t.id));
@@ -40,8 +41,8 @@ export const useLikes = () => {
         try {
             const method = isLiked ? 'DELETE' : 'POST';
             const url = isLiked
-                ? `http://localhost:5000/api/playlists/liked/tracks/${track.id}`
-                : `http://localhost:5000/api/playlists/liked/tracks`;
+                ? `${API_URL}/api/playlists/liked/tracks/${track.id}`
+                : `${API_URL}/api/playlists/liked/tracks`;
 
             const options = { method };
             if (!isLiked) {

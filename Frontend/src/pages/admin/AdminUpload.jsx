@@ -3,6 +3,7 @@ import Layout from '../../components/layout/Layout';
 import { storage, auth } from '../../services/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import toast, { Toaster } from 'react-hot-toast';
+import { API_URL } from '../../config/api';
 
 const AdminUpload = () => {
     const [formData, setFormData] = useState({
@@ -112,7 +113,7 @@ const AdminUpload = () => {
                 audioUrl
             };
 
-            const res = await fetch('http://localhost:5000/api/tracks', {
+            const res = await fetch(`${API_URL}/api/tracks`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)

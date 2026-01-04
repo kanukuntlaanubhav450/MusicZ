@@ -3,7 +3,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import Layout from '../../components/layout/Layout';
 import { useAudio } from '../../context/AudioContext';
 import { useLikes } from '../../hooks/useLikes';
-
+import { API_URL } from '../../config/api';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import AddToPlaylistModal from '../../components/common/AddToPlaylistModal';
@@ -23,7 +23,7 @@ const Home = () => {
             try {
                 // Fetch Tracks
                 console.log("Home: Fetching tracks...");
-                const tracksRes = await fetch('http://localhost:5000/api/tracks');
+                const tracksRes = await fetch(`${API_URL}/api/tracks`);
                 if (!tracksRes.ok) throw new Error(`Tracks fetch failed: ${tracksRes.status}`);
                 const tracksData = await tracksRes.json();
                 console.log("Home: Tracks data:", tracksData);
@@ -36,7 +36,7 @@ const Home = () => {
 
                 // Fetch Categories
                 console.log("Home: Fetching categories...");
-                const catRes = await fetch('http://localhost:5000/api/categories');
+                const catRes = await fetch(`${API_URL}/api/categories`);
                 if (!catRes.ok) throw new Error(`Categories fetch failed: ${catRes.status}`);
                 const catData = await catRes.json();
                 console.log("Home: Categories data:", catData);
@@ -60,7 +60,7 @@ const Home = () => {
 
     const handlePlayFavorites = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/playlists/liked');
+            const res = await fetch(`${API_URL}/api/playlists/liked`);
             if (res.ok) {
                 const data = await res.json();
                 if (data.tracks && data.tracks.length > 0) {

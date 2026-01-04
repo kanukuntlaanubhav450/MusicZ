@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_URL } from '../../config/api';
 
 const AddToPlaylistModal = ({ track, onClose }) => {
     const [playlists, setPlaylists] = useState([]);
@@ -7,7 +8,7 @@ const AddToPlaylistModal = ({ track, onClose }) => {
     useEffect(() => {
         const fetchPlaylists = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/playlists/my');
+                const res = await fetch(`${API_URL}/api/playlists/my`);
                 if (res.ok) {
                     const data = await res.json();
                     setPlaylists(data);
@@ -23,7 +24,7 @@ const AddToPlaylistModal = ({ track, onClose }) => {
 
     const handleAddToPlaylist = async (playlistId) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/playlists/${playlistId}/tracks`, {
+            const res = await fetch(`${API_URL}/api/playlists/${playlistId}/tracks`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ track })
