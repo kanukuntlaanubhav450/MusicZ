@@ -4,6 +4,7 @@ import Layout from '../../components/layout/Layout';
 import { useAudio } from '../../context/AudioContext';
 import { useLikes } from '../../hooks/useLikes';
 import { API_URL } from '../../config/api';
+import { authenticatedFetch } from '../../utils/auth';
 
 const Library = () => {
     const [likedSongs, setLikedSongs] = useState([]); // Local state for the list
@@ -14,7 +15,7 @@ const Library = () => {
     useEffect(() => {
         const fetchLikedSongs = async () => {
             try {
-                const res = await fetch(`${API_URL}/api/library/loved`);
+                const res = await authenticatedFetch(`${API_URL}/api/library/loved`);
                 if (!res.ok) throw new Error('Failed to fetch library');
                 const data = await res.json();
                 setLikedSongs(data);

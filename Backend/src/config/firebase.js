@@ -31,4 +31,4 @@ try {
     console.error("Firebase Admin Initialization Error:", error);
 }
 
-module.exports = { db };
+module.exports = { db, admin };

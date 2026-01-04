@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { API_URL } from '../../config/api';
+import { authenticatedFetch } from '../../utils/auth';
 
 const NavItem = ({ to, icon, label, active }) => (
     <Link
@@ -23,7 +24,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     React.useEffect(() => {
         const fetchPlaylists = async () => {
             try {
-                const res = await fetch(`${API_URL}/api/playlists/my`);
+                const res = await authenticatedFetch(`${API_URL}/api/playlists/my`);
                 if (res.ok) {
                     const data = await res.json();
                     setPlaylists(data);
@@ -40,7 +41,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         if (!name) return;
 
         try {
-            const res = await fetch(`${API_URL}/api/playlists`, {
+            const res = await authenticatedFetch(`${API_URL}/api/playlists`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name })

@@ -1,23 +1,20 @@
 const { db } = require('../config/firebase');
 
-// MOCK DATA: Simulating a user's "Liked Songs" playlist
-const MOCK_LOVED_TRACKS = [
-    { id: '3', title: 'Get Lucky', artist: 'Daft Punk', album: 'Random Access Memories', duration: 248, imageUrl: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4', audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
-    { id: '1', title: 'Midnight City', artist: 'M83', album: 'Hurry Up, We\'re Dreaming', duration: 320, imageUrl: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745', audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
-    { id: '4', title: 'Blinding Lights', artist: 'The Weeknd', album: 'After Hours', duration: 200, imageUrl: 'https://images.unsplash.com/photo-1514525253440-b393452e8d26', audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3' }
-];
+const isDbAvailable = () => !!db;
 
 exports.getLovedTracks = async (req, res) => {
     try {
-        // In a real app, we would query Firestore for the current user's loved tracks.
-        // e.g., await db.collection('users').doc(req.user.uid).collection('loved').get();
+        const userId = req.user.uid;
 
-        if (db) {
-            // Placeholder for Firestore logic if DB was active
-            res.json(MOCK_LOVED_TRACKS);
-        } else {
-            res.json(MOCK_LOVED_TRACKS);
+        if (isDbAvailable()) {
+            // Get from subcollection: users/{userId}/loved
+            const snapshot = await db.collection('users').doc(userId).collection('loved').get();
+            const tracks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            return res.json(tracks);
         }
+
+        // Fallback or empty if no DB
+        res.json([]);
     } catch (error) {
         console.error("Library Error:", error);
         res.status(500).json({ message: 'Server Error', tracks: [] });
@@ -25,6 +22,41 @@ exports.getLovedTracks = async (req, res) => {
 };
 
 exports.toggleLove = async (req, res) => {
-    // Mock toggle endpoint
-    res.json({ message: 'Success', status: 'toggled' });
+    try {
+        const userId = req.user.uid;
+        const { track } = req.body;
+
+        if (!track || !track.id) {
+            // If it's a DELETE request (unlike), we might just get ID in URL? 
+            // The frontend sends POST for toggle or separate DELETE. 
+            // Implementation plan said "toggleLove". Let's check frontend useLikes hook.
+            // It sends POST with body { track } for like, and DELETE /tracks/:id for unlike.
+            // Wait, library.routes.js only has POST /loved currently mapped to toggleLove.
+            // Let's verify routes file again.
+            return res.status(400).json({ message: 'Track data required' });
+        }
+
+        if (isDbAvailable()) {
+            const userRef = db.collection('users').doc(userId);
+            const trackRef = userRef.collection('loved').doc(track.id.toString());
+
+            const doc = await trackRef.get();
+
+            if (doc.exists) {
+                // Unlike
+                await trackRef.delete();
+                return res.json({ message: 'Removed from Liked Songs', status: 'removed' });
+            } else {
+                // Like
+                await trackRef.set(track);
+                return res.json({ message: 'Added to Liked Songs', status: 'added' });
+            }
+        }
+
+        res.status(500).json({ message: 'DB Error' });
+    } catch (error) {
+        console.error("Toggle Love Error:", error);
+        res.status(500).json({ message: 'Server Error' });
+    }
 };
+

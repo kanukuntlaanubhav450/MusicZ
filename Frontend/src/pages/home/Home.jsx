@@ -4,6 +4,7 @@ import Layout from '../../components/layout/Layout';
 import { useAudio } from '../../context/AudioContext';
 import { useLikes } from '../../hooks/useLikes';
 import { API_URL } from '../../config/api';
+import { authenticatedFetch } from '../../utils/auth';
 import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import AddToPlaylistModal from '../../components/common/AddToPlaylistModal';
@@ -60,7 +61,7 @@ const Home = () => {
 
     const handlePlayFavorites = async () => {
         try {
-            const res = await fetch(`${API_URL}/api/playlists/liked`);
+            const res = await authenticatedFetch(`${API_URL}/api/playlists/liked`);
             if (res.ok) {
                 const data = await res.json();
                 if (data.tracks && data.tracks.length > 0) {

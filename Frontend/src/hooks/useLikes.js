@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { API_URL } from '../config/api';
+import { authenticatedFetch } from '../utils/auth';
 
 export const useLikes = () => {
     const [likedTrackIds, setLikedTrackIds] = useState(new Set());
@@ -8,7 +9,7 @@ export const useLikes = () => {
 
     const fetchLikedSongs = useCallback(async () => {
         try {
-            const res = await fetch(`${API_URL}/api/playlists/liked`);
+            const res = await authenticatedFetch(`${API_URL}/api/playlists/liked`);
             if (res.ok) {
                 const data = await res.json();
                 const ids = new Set((data.tracks || []).map(t => t.id));
@@ -50,7 +51,7 @@ export const useLikes = () => {
                 options.body = JSON.stringify({ track });
             }
 
-            const res = await fetch(url, options);
+            const res = await authenticatedFetch(url, options);
             if (!res.ok) throw new Error('Failed to update like');
 
             toast.success(isLiked ? 'Removed from Liked Songs' : 'Added to Liked Songs');
