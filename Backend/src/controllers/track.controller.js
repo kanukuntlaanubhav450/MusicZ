@@ -8,9 +8,7 @@ exports.getAllTracks = async (req, res) => {
 
         if (isDbAvailable()) {
             // Filter tracks by the logged-in user
-            const snapshot = await db.collection('tracks')
-                .where('ownerId', '==', userId)
-                .get();
+            const snapshot = await db.collection('tracks').get();
 
             const tracks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             return res.json(tracks);

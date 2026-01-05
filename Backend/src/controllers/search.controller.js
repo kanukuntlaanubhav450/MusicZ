@@ -50,10 +50,7 @@ exports.search = async (req, res) => {
         // Try fetching from DB if initialized
         if (db) {
             try {
-                // Secure Search: Only find tracks owned by the user
-                const tracksSnapshot = await db.collection('tracks')
-                    .where('ownerId', '==', req.user.uid)
-                    .get();
+                const tracksSnapshot = await db.collection('tracks').get();
 
                 tracksSnapshot.forEach(doc => tracks.push({ id: doc.id, ...doc.data() }));
 
