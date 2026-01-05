@@ -4,6 +4,7 @@ import Layout from '../../components/layout/Layout';
 import { useAudio } from '../../context/AudioContext';
 import AddToPlaylistModal from '../../components/common/AddToPlaylistModal';
 import { API_URL } from '../../config/api';
+import { authenticatedFetch } from '../../utils/auth';
 
 const PodcastDetail = () => {
     const { id } = useParams();
@@ -15,7 +16,7 @@ const PodcastDetail = () => {
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                const res = await fetch(`${API_URL}/api/podcasts/${id}`);
+                const res = await authenticatedFetch(`${API_URL}/api/podcasts/${id}`);
                 if (!res.ok) throw new Error('Failed to fetch podcast details');
                 const data = await res.json();
                 setPodcast(data);
