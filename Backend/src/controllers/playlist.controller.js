@@ -63,13 +63,19 @@ exports.getPlaylistById = async (req, res) => {
 
         // Special case for "Liked Songs" virtual playlist
         if (id === 'liked') {
+            let likedTracks = [];
+            if (isDbAvailable()) {
+                const snapshot = await db.collection('users').doc(userId).collection('loved').get();
+                likedTracks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            }
             return res.json({
                 id: 'liked',
                 name: 'Liked Songs',
                 ownerId: userId,
                 imageUrl: 'https://placehold.co/400/indigo/white?text=Liked',
                 description: 'Your favorite tracks',
-                isSystem: true // Flag to prevent deletion/renaming
+                isSystem: true,
+                tracks: likedTracks // Return actual tracks instead of nothing
             });
         }
 
