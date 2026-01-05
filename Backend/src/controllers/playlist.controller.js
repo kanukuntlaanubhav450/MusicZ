@@ -169,6 +169,18 @@ exports.addTrackToPlaylist = async (req, res) => {
 
         if (!track) return res.status(400).json({ message: 'Track data required' });
 
+        if (id === 'liked') {
+            if (isDbAvailable()) {
+                const trackRef = db.collection('users').doc(userId).collection('loved').doc(track.id.toString());
+                const doc = await trackRef.get();
+                if (doc.exists) {
+                    return res.status(400).json({ message: 'Track already exists in Liked Songs' });
+                }
+                await trackRef.set(track);
+                return res.json({ message: 'Track added to Liked Songs', track });
+            }
+        }
+
         if (isDbAvailable()) {
             const ref = db.collection('playlists').doc(id);
             const doc = await ref.get();
@@ -198,6 +210,13 @@ exports.removeTrackFromPlaylist = async (req, res) => {
     try {
         const { id, trackId } = req.params;
         const userId = req.user.uid;
+
+        if (id === 'liked') {
+            if (isDbAvailable()) {
+                await db.collection('users').doc(userId).collection('loved').doc(trackId).delete();
+                return res.json({ message: 'Track removed from Liked Songs', trackId });
+            }
+        }
 
         if (isDbAvailable()) {
             const ref = db.collection('playlists').doc(id);

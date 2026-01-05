@@ -127,7 +127,7 @@ const PlaylistDetail = () => {
                     <h1 className="text-5xl md:text-7xl font-black text-white mb-4 mt-2">{playlist.name}</h1>
                     <p className="text-gray-300 font-medium mb-4">{playlist.description}</p>
                     <div className="flex items-center gap-2 text-sm text-gray-400">
-                        <span className="font-bold text-white">Sannu</span> • {playlist.tracks.length} songs
+                        <span className="font-bold text-white">You</span> • {playlist.tracks.length} songs
                     </div>
                 </div>
             </div>
