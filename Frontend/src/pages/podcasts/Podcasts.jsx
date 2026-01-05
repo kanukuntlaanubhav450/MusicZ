@@ -5,6 +5,7 @@ import AddToPlaylistModal from '../../components/common/AddToPlaylistModal';
 import { useLikes } from '../../hooks/useLikes';
 import { Toaster } from 'react-hot-toast';
 import { API_URL } from '../../config/api';
+import { authenticatedFetch } from '../../utils/auth';
 
 const Podcasts = () => {
     const [podcasts, setPodcasts] = useState([]);
@@ -17,7 +18,7 @@ const Podcasts = () => {
     useEffect(() => {
         const fetchPodcasts = async () => {
             try {
-                const res = await fetch(`${API_URL}/api/podcasts`);
+                const res = await authenticatedFetch(`${API_URL}/api/podcasts`);
                 if (!res.ok) throw new Error('Failed to fetch podcasts');
                 const data = await res.json();
                 setPodcasts(data);

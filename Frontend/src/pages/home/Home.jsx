@@ -24,7 +24,7 @@ const Home = () => {
             try {
                 // Fetch Tracks
                 console.log("Home: Fetching tracks...");
-                const tracksRes = await fetch(`${API_URL}/api/tracks`);
+                const tracksRes = await authenticatedFetch(`${API_URL}/api/tracks`);
                 if (!tracksRes.ok) throw new Error(`Tracks fetch failed: ${tracksRes.status}`);
                 const tracksData = await tracksRes.json();
                 console.log("Home: Tracks data:", tracksData);
@@ -37,7 +37,7 @@ const Home = () => {
 
                 // Fetch Categories
                 console.log("Home: Fetching categories...");
-                const catRes = await fetch(`${API_URL}/api/categories`);
+                const catRes = await authenticatedFetch(`${API_URL}/api/categories`);
                 if (!catRes.ok) throw new Error(`Categories fetch failed: ${catRes.status}`);
                 const catData = await catRes.json();
                 console.log("Home: Categories data:", catData);
