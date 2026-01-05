@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { API_URL } from '../../config/api';
 import { authenticatedFetch } from '../../utils/auth';
+import { auth } from '../../services/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const NavItem = ({ to, icon, label, active }) => (
     <Link
@@ -19,7 +21,20 @@ const NavItem = ({ to, icon, label, active }) => (
 const Sidebar = ({ isOpen, onClose }) => {
     const location = useLocation();
     const navigate = useNavigate();
-    const [playlists, setPlaylists] = React.useState([]);
+    const [playlists, setPlaylists] = useState([]);
+    const [userEmail, setUserEmail] = useState('');
+
+    // Listen for auth state changes to get user email
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user) {
+                setUserEmail(user.email || '');
+            } else {
+                setUserEmail('');
+            }
+        });
+        return () => unsubscribe();
+    }, []);
 
     React.useEffect(() => {
         const fetchPlaylists = async () => {
@@ -61,14 +76,22 @@ const Sidebar = ({ isOpen, onClose }) => {
             w-64 bg-black h-screen fixed left-0 top-0 flex flex-col border-r border-white/10 z-30 transition-transform duration-300
             ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
         `}>
-            <div className="p-6 flex items-center justify-between">
-                {/* Logo */}
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-green-600 bg-clip-text text-transparent cursor-pointer" onClick={() => navigate('/')}>
-                    MusicStreamz
-                </h1>
-                <button className="md:hidden text-gray-400" onClick={onClose}>
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
+            <div className="p-6">
+                <div className="flex items-center justify-between">
+                    {/* Logo */}
+                    <h1 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-green-600 bg-clip-text text-transparent cursor-pointer" onClick={() => navigate('/')}>
+                        MusicStreamz
+                    </h1>
+                    <button className="md:hidden text-gray-400" onClick={onClose}>
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+                {/* User Email */}
+                {userEmail && (
+                    <p className="text-xs text-gray-400 mt-2 truncate" title={userEmail}>
+                        {userEmail}
+                    </p>
+                )}
             </div>
 
             <nav className="flex-1 mt-6 overflow-y-auto">

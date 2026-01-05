@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { auth } from '../../services/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate, Link } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
 
 const Signup = () => {
     const [email, setEmail] = useState('');
@@ -13,6 +14,7 @@ const Signup = () => {
         e.preventDefault();
         try {
             await createUserWithEmailAndPassword(auth, email, password);
+            toast.success("Signup successful! Welcome!");
             navigate('/');
         } catch (err) {
             setError(err.message);
@@ -47,6 +49,7 @@ const Signup = () => {
                     Already have an account? <Link to="/login" className="text-green-500 hover:underline">Log in</Link>
                 </p>
             </div>
+            <Toaster position="top-center" />
         </div>
     );
 };
