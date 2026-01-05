@@ -15,10 +15,11 @@ const Library = () => {
     useEffect(() => {
         const fetchLikedSongs = async () => {
             try {
-                const res = await authenticatedFetch(`${API_URL}/api/library/loved`);
+                // User wants Library to be Global Catalog, so we fetch /api/tracks
+                const res = await authenticatedFetch(`${API_URL}/api/tracks`);
                 if (!res.ok) throw new Error('Failed to fetch library');
                 const data = await res.json();
-                setLikedSongs(data);
+                setLikedSongs(data); // Keeping variable name for now to minimize diff, but it holds all tracks
             } catch (error) {
                 console.error("Library Error:", error);
             } finally {
@@ -43,10 +44,10 @@ const Library = () => {
                     <svg className="w-24 h-24 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
                 </div>
                 <div>
-                    <p className="text-sm font-bold uppercase text-white">Playlist</p>
-                    <h1 className="text-5xl font-black text-white mb-4">Liked Songs</h1>
+                    <p className="text-sm font-bold uppercase text-white">Public Catalog</p>
+                    <h1 className="text-5xl font-black text-white mb-4">Library</h1>
                     <p className="text-gray-300 text-sm">
-                        <span className="text-white font-bold">You</span> • {likedSongs.length} songs
+                        <span className="text-white font-bold">All Users</span> • {likedSongs.length} songs
                     </p>
                 </div>
             </div>
