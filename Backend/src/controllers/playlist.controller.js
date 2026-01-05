@@ -171,13 +171,16 @@ exports.addTrackToPlaylist = async (req, res) => {
 
         if (id === 'liked') {
             if (isDbAvailable()) {
-                const trackRef = db.collection('users').doc(userId).collection('loved').doc(track.id.toString());
+                const trackIdStr = String(track.id);
+                const trackRef = db.collection('users').doc(userId).collection('loved').doc(trackIdStr);
                 const doc = await trackRef.get();
                 if (doc.exists) {
                     return res.status(400).json({ message: 'Track already exists in Liked Songs' });
                 }
                 await trackRef.set(track);
                 return res.json({ message: 'Track added to Liked Songs', track });
+            } else {
+                return res.status(503).json({ message: 'Database unavailable for Liked Songs' });
             }
         }
 
@@ -191,7 +194,9 @@ exports.addTrackToPlaylist = async (req, res) => {
             const data = doc.data();
             const currentTracks = data.tracks || [];
 
-            if (currentTracks.some(t => t.id === track.id)) {
+            // Normalize ID for check
+            const incomingId = String(track.id);
+            if (currentTracks.some(t => String(t.id) === incomingId)) {
                 return res.status(400).json({ message: 'Track already exists in this playlist' });
             }
 
@@ -213,8 +218,10 @@ exports.removeTrackFromPlaylist = async (req, res) => {
 
         if (id === 'liked') {
             if (isDbAvailable()) {
-                await db.collection('users').doc(userId).collection('loved').doc(trackId).delete();
+                await db.collection('users').doc(userId).collection('loved').doc(String(trackId)).delete();
                 return res.json({ message: 'Track removed from Liked Songs', trackId });
+            } else {
+                return res.status(503).json({ message: 'Database unavailable for Liked Songs' });
             }
         }
 
@@ -226,7 +233,8 @@ exports.removeTrackFromPlaylist = async (req, res) => {
             if (doc.data().ownerId !== userId) return res.status(403).json({ message: 'Unauthorized' });
 
             const data = doc.data();
-            const updatedTracks = (data.tracks || []).filter(t => t.id !== trackId);
+            const targetId = String(trackId);
+            const updatedTracks = (data.tracks || []).filter(t => String(t.id) !== targetId);
 
             await ref.update({ tracks: updatedTracks });
             return res.json({ message: 'Track removed', tracks: updatedTracks });

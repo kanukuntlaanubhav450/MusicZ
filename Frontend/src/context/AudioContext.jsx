@@ -19,18 +19,65 @@ export const AudioProvider = ({ children }) => {
     // Computed frequency bands for shader
     const [audioData, setAudioData] = useState({ bass: 0, mid: 0, high: 0, energy: 0 });
 
+    // Queue State
+    const [queue, setQueue] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(-1);
+
     const audioRef = useRef(null);
 
     const playTrack = (track) => {
         if (currentTrack?.id === track.id) {
             togglePlay();
         } else {
-            setIsLoading(true); // Start loading
+            setIsLoading(true);
+            setQueue([track]); // Single track queue
+            setCurrentIndex(0);
             setCurrentTrack(track);
-            setCurrentTime(0); // Reset time for new track
+            setCurrentTime(0);
             setIsPlaying(true);
-            // Audio element will auto-play due to useEffect dependency or explicit play
         }
+    };
+
+    const playPlaylist = (tracks, startIndex = 0) => {
+        if (!tracks || tracks.length === 0) return;
+        setQueue(tracks);
+        setCurrentIndex(startIndex);
+        setCurrentTrack(tracks[startIndex]);
+        setCurrentTime(0);
+        setIsLoading(true);
+        setIsPlaying(true);
+    };
+
+    const nextTrack = () => {
+        if (queue.length === 0 || currentIndex === -1) return;
+        const nextIndex = (currentIndex + 1) % queue.length; // Loop or stop? Let's loop for now or stop at end.
+        // Let's stop at end for standard behavior, loop for repeating.
+        // For now, simple loop:
+        if (nextIndex < queue.length) {
+            // If we want to loop, use % queue.length. If not, check bounds.
+            // Im implementing looping for continuous play
+            setCurrentIndex(nextIndex);
+            setCurrentTrack(queue[nextIndex]);
+            setCurrentTime(0);
+            setIsLoading(true);
+            setIsPlaying(true);
+        }
+    };
+
+    const prevTrack = () => {
+        if (queue.length === 0 || currentIndex === -1) return;
+        // If > 3 seconds in, restart track
+        if (currentTime > 3) {
+            seek(0);
+            return;
+        }
+
+        const prevIndex = (currentIndex - 1 + queue.length) % queue.length;
+        setCurrentIndex(prevIndex);
+        setCurrentTrack(queue[prevIndex]);
+        setCurrentTime(0);
+        setIsLoading(true);
+        setIsPlaying(true);
     };
 
     const togglePlay = () => {
@@ -57,8 +104,8 @@ export const AudioProvider = ({ children }) => {
     };
 
     const handleEnded = () => {
-        setIsPlaying(false);
-        // Optional: Auto-play next track logic here
+        // Auto play next
+        nextTrack();
     };
 
     useEffect(() => {
@@ -233,6 +280,9 @@ export const AudioProvider = ({ children }) => {
             currentTime,
             volume,
             playTrack,
+            playPlaylist,
+            nextTrack,
+            prevTrack,
             togglePlay,
             seek,
             setVolume,

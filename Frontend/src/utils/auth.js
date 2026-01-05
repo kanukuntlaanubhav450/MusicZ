@@ -11,5 +11,15 @@ export const authenticatedFetch = async (url, options = {}) => {
         ...options.headers,
         ...(token ? { 'Authorization': `Bearer ${token}` } : {})
     };
-    return fetch(url, { ...options, headers });
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+    try {
+        const response = await fetch(url, { ...options, headers, signal: controller.signal });
+        clearTimeout(id);
+        return response;
+    } catch (error) {
+        clearTimeout(id);
+        throw error;
+    }
 };

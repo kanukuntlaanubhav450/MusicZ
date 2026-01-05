@@ -15,49 +15,10 @@ const Home = () => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [trackToAdd, setTrackToAdd] = useState(null);
-    const { playTrack } = useAudio();
+    const { playTrack, playPlaylist } = useAudio();
     const { likedTrackIds, toggleLike } = useLikes();
 
-    useEffect(() => {
-        const fetchData = async () => {
-            console.log("Home: Starting data fetch...");
-            try {
-                // Fetch Tracks
-                console.log("Home: Fetching tracks...");
-                const tracksRes = await authenticatedFetch(`${API_URL}/api/tracks`);
-                if (!tracksRes.ok) throw new Error(`Tracks fetch failed: ${tracksRes.status}`);
-                const tracksData = await tracksRes.json();
-                console.log("Home: Tracks data:", tracksData);
-                if (Array.isArray(tracksData)) {
-                    setTracks(tracksData);
-                } else {
-                    console.error("Home: Tracks data is NOT an array!", tracksData);
-                    setTracks([]);
-                }
-
-                // Fetch Categories
-                console.log("Home: Fetching categories...");
-                const catRes = await authenticatedFetch(`${API_URL}/api/categories`);
-                if (!catRes.ok) throw new Error(`Categories fetch failed: ${catRes.status}`);
-                const catData = await catRes.json();
-                console.log("Home: Categories data:", catData);
-                if (Array.isArray(catData)) {
-                    setCategories(catData);
-                } else {
-                    console.error("Home: Categories data is NOT an array!", catData);
-                    setCategories([]);
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-                // Ensure we verify error
-            } finally {
-                console.log("Home: Fetch completed, setting loading false");
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, []);
+    // ...
 
     const handlePlayFavorites = async () => {
         try {
@@ -65,7 +26,7 @@ const Home = () => {
             if (res.ok) {
                 const data = await res.json();
                 if (data.tracks && data.tracks.length > 0) {
-                    playTrack(data.tracks[0]);
+                    playPlaylist(data.tracks);
                     toast.success("Playing Liked Songs");
                 } else {
                     toast("You haven't liked any songs yet!", { icon: '🎵' });

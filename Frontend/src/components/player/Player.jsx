@@ -3,7 +3,7 @@ import { useAudio } from '../../context/AudioContext';
 import ElectricWavesShader from '../ui/ElectricWavesShader';
 
 const Player = () => {
-    const { currentTrack, isPlaying, togglePlay, duration, currentTime, seek, volume, setVolume, closePlayer, isLoading } = useAudio();
+    const { currentTrack, isPlaying, togglePlay, duration, currentTime, seek, volume, setVolume, closePlayer, isLoading, nextTrack, prevTrack } = useAudio();
 
     if (!currentTrack) return null;
 
@@ -36,7 +36,7 @@ const Player = () => {
                 {/* Controls */}
                 <div className="flex-1 max-w-2xl flex flex-col items-center justify-center gap-2 relative">
                     <div className="flex items-center gap-6">
-                        <button className="text-gray-400 hover:text-white transition cursor-pointer">
+                        <button onClick={prevTrack} className="text-gray-400 hover:text-white transition cursor-pointer">
                             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z" /></svg>
                         </button>
                         <button
@@ -55,7 +55,7 @@ const Player = () => {
                                 <svg className="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                             )}
                         </button>
-                        <button className="text-gray-400 hover:text-white transition cursor-pointer">
+                        <button onClick={nextTrack} className="text-gray-400 hover:text-white transition cursor-pointer">
                             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z" /></svg>
                         </button>
                     </div>
@@ -102,4 +102,3 @@ const Player = () => {
 };
 
 export default Player;
-
