@@ -18,7 +18,46 @@ const Home = () => {
     const { playTrack, playPlaylist } = useAudio();
     const { likedTrackIds, toggleLike } = useLikes();
 
-    // ...
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Fetch both endpoints in parallel
+                const [tracksRes, catRes] = await Promise.all([
+                    authenticatedFetch(`${API_URL}/api/tracks`),
+                    authenticatedFetch(`${API_URL}/api/categories`)
+                ]);
+
+                if (tracksRes.ok) {
+                    const tracksData = await tracksRes.json();
+                    if (Array.isArray(tracksData)) {
+                        setTracks(tracksData);
+                    } else {
+                        toast.error("Invalid tracks data format");
+                    }
+                } else {
+                    toast.error("Failed to load tracks");
+                }
+
+                if (catRes.ok) {
+                    const catData = await catRes.json();
+                    if (Array.isArray(catData)) {
+                        setCategories(catData);
+                    } else {
+                        toast.error("Invalid categories data format");
+                    }
+                } else {
+                    toast.error("Failed to load categories");
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                toast.error("Failed to load data. Please check your connection.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const handlePlayFavorites = async () => {
         try {

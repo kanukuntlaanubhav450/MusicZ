@@ -167,7 +167,7 @@ exports.addTrackToPlaylist = async (req, res) => {
         const { track } = req.body;
         const userId = req.user.uid;
 
-        if (!track) return res.status(400).json({ message: 'Track data required' });
+        if (!track || track.id == null) return res.status(400).json({ message: 'Track data with valid ID is required' });
 
         if (id === 'liked') {
             if (isDbAvailable()) {
