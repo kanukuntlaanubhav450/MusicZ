@@ -9,7 +9,9 @@ const MOCK_TRACKS = [
         artist: 'SoundHelix',
         category: 'Electronic',
         imageUrl: 'https://placehold.co/400/1a1a2e/e94560?text=Chill',
-        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+        ownerId: 'system',
+        createdAt: '2024-01-01T00:00:00.000Z'
     },
     {
         id: 'mock-2',
@@ -17,7 +19,9 @@ const MOCK_TRACKS = [
         artist: 'SoundHelix',
         category: 'Pop',
         imageUrl: 'https://placehold.co/400/16213e/0f3460?text=Summer',
-        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
+        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+        ownerId: 'system',
+        createdAt: '2024-01-01T00:00:00.000Z'
     },
     {
         id: 'mock-3',
@@ -25,7 +29,9 @@ const MOCK_TRACKS = [
         artist: 'SoundHelix',
         category: 'Electronic',
         imageUrl: 'https://placehold.co/400/1b262c/0f4c75?text=Night',
-        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
+        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+        ownerId: 'system',
+        createdAt: '2024-01-01T00:00:00.000Z'
     },
     {
         id: 'mock-4',
@@ -33,14 +39,14 @@ const MOCK_TRACKS = [
         artist: 'SoundHelix',
         category: 'Jazz',
         imageUrl: 'https://placehold.co/400/3c1642/886a92?text=Jazz',
-        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3'
+        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+        ownerId: 'system',
+        createdAt: '2024-01-01T00:00:00.000Z'
     }
 ];
 
 exports.getAllTracks = async (req, res) => {
     try {
-        const userId = req.user.uid;
-
         if (isDbAvailable()) {
             const snapshot = await db.collection('tracks').get();
             const dbTracks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));

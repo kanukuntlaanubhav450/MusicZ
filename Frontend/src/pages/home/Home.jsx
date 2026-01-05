@@ -19,13 +19,19 @@ const Home = () => {
     const { likedTrackIds, toggleLike } = useLikes();
 
     useEffect(() => {
+        const controller = new AbortController();
+        let isMounted = true;
+
         const fetchData = async () => {
             try {
-                // Fetch both endpoints in parallel
+                // Fetch both endpoints in parallel with abort signal
                 const [tracksRes, catRes] = await Promise.all([
-                    authenticatedFetch(`${API_URL}/api/tracks`),
-                    authenticatedFetch(`${API_URL}/api/categories`)
+                    authenticatedFetch(`${API_URL}/api/tracks`, { signal: controller.signal }),
+                    authenticatedFetch(`${API_URL}/api/categories`, { signal: controller.signal })
                 ]);
+
+                // Guard: skip state updates if unmounted
+                if (!isMounted) return;
 
                 if (tracksRes.ok) {
                     const tracksData = await tracksRes.json();
@@ -49,14 +55,26 @@ const Home = () => {
                     toast.error("Failed to load categories");
                 }
             } catch (error) {
+                // Don't show error if it was an intentional abort
+                if (error.name === 'AbortError') return;
+                if (!isMounted) return;
+
                 console.error("Error fetching data:", error);
                 toast.error("Failed to load data. Please check your connection.");
             } finally {
-                setLoading(false);
+                if (isMounted) {
+                    setLoading(false);
+                }
             }
         };
 
         fetchData();
+
+        // Cleanup: abort requests and mark as unmounted
+        return () => {
+            isMounted = false;
+            controller.abort();
+        };
     }, []);
 
     const handlePlayFavorites = async () => {

@@ -14,7 +14,9 @@ const MOCK_TRACKS = [
         artist: 'SoundHelix',
         category: 'Electronic',
         imageUrl: 'https://placehold.co/400/1a1a2e/e94560?text=Chill',
-        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+        ownerId: 'system',
+        createdAt: '2024-01-01T00:00:00.000Z'
     },
     {
         id: 'mock-2',
@@ -22,7 +24,9 @@ const MOCK_TRACKS = [
         artist: 'SoundHelix',
         category: 'Pop',
         imageUrl: 'https://placehold.co/400/16213e/0f3460?text=Summer',
-        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
+        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+        ownerId: 'system',
+        createdAt: '2024-01-01T00:00:00.000Z'
     },
     {
         id: 'mock-3',
@@ -30,7 +34,9 @@ const MOCK_TRACKS = [
         artist: 'SoundHelix',
         category: 'Electronic',
         imageUrl: 'https://placehold.co/400/1b262c/0f4c75?text=Night',
-        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
+        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+        ownerId: 'system',
+        createdAt: '2024-01-01T00:00:00.000Z'
     },
     {
         id: 'mock-4',
@@ -38,7 +44,9 @@ const MOCK_TRACKS = [
         artist: 'SoundHelix',
         category: 'Jazz',
         imageUrl: 'https://placehold.co/400/3c1642/886a92?text=Jazz',
-        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3'
+        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+        ownerId: 'system',
+        createdAt: '2024-01-01T00:00:00.000Z'
     }
 ];
 
@@ -93,7 +101,11 @@ exports.search = async (req, res) => {
                     podcastsSnapshot.forEach(doc => podcasts.push({ id: doc.id, ...doc.data() }));
                 }
             } catch (dbError) {
-                console.warn("Search: Database query failed, using only mock data.", dbError);
+                const errorMsg = dbError?.message || 'Unknown database error';
+                console.warn("Search: Database query failed, using only mock data.", errorMsg);
+                if (process.env.NODE_ENV === 'development' && dbError?.stack) {
+                    console.debug("Stack trace:", dbError.stack);
+                }
                 tracks = MOCK_TRACKS;
                 podcasts = MOCK_PODCASTS;
             }
