@@ -15,7 +15,7 @@ const PlaylistDetail = () => {
     const [loading, setLoading] = useState(true);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
-    const { playTrack, currentTrack, isPlaying } = useAudio();
+    const { playPlaylist, currentTrack, isPlaying } = useAudio();
 
     const fetchPlaylist = async () => {
         try {
@@ -108,7 +108,7 @@ const PlaylistDetail = () => {
 
     const handlePlayPlaylist = () => {
         if (playlist.tracks && playlist.tracks.length > 0) {
-            playTrack(playlist.tracks[0]);
+            playPlaylist(playlist.tracks, 0);
         }
     };
 
@@ -186,7 +186,7 @@ const PlaylistDetail = () => {
                     playlist.tracks.map((track, index) => (
                         <div
                             key={track.id}
-                            onClick={() => playTrack(track)}
+                            onClick={() => playPlaylist(playlist.tracks, index)}
                             className="group grid grid-cols-[auto,1fr,auto] gap-4 px-4 py-3 rounded-md hover:bg-white/10 transition-colors cursor-pointer items-center"
                         >
                             <span className="w-8 text-gray-400 group-hover:text-white flex items-center justify-center">

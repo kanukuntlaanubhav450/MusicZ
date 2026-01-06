@@ -147,8 +147,8 @@ const Home = () => {
                     <section className="mb-12">
                         <h3 className="text-2xl font-bold mb-6 border-l-4 border-yellow-500 pl-4">Jump Back In</h3>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-                            {recentHistory.slice(0, 6).map((track) => (
-                                <div key={track.id} onClick={() => playTrack(track)} className="group relative rounded-xl overflow-hidden cursor-pointer aspect-square shadow-lg hover:bg-white/10 bg-white/5 transition-colors">
+                            {recentHistory.slice(0, 6).map((track, index) => (
+                                <div key={track.id} onClick={() => playPlaylist(recentHistory.slice(0, 6), index)} className="group relative rounded-xl overflow-hidden cursor-pointer aspect-square shadow-lg hover:bg-white/10 bg-white/5 transition-colors">
                                     <div className="relative w-full h-full">
                                         <img src={track.imageUrl} alt={track.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -174,8 +174,8 @@ const Home = () => {
                     <LoadingSpinner />
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {tracks.map((track) => (
-                            <div key={track.id} onClick={() => playTrack(track)} className="bg-white/5 p-4 rounded-xl hover:bg-white/10 transition-colors shadow-lg group cursor-pointer relative">
+                        {tracks.map((track, index) => (
+                            <div key={track.id} onClick={() => playPlaylist(tracks, index)} className="bg-white/5 p-4 rounded-xl hover:bg-white/10 transition-colors shadow-lg group cursor-pointer relative">
                                 <div className="relative mb-4 overflow-hidden rounded-lg aspect-square">
                                     <img src={track.imageUrl} alt={track.title} className="w-full h-full object-cover shadow-md group-hover:scale-105 transition-transform duration-300" />
                                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">

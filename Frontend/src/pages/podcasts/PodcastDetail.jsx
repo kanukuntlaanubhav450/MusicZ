@@ -11,7 +11,7 @@ const PodcastDetail = () => {
     const [podcast, setPodcast] = useState(null);
     const [loading, setLoading] = useState(true);
     const [trackToAdd, setTrackToAdd] = useState(null);
-    const { playTrack, currentTrack, isPlaying, isLoading } = useAudio();
+    const { playPlaylist, currentTrack, isPlaying, isLoading } = useAudio();
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -66,7 +66,15 @@ const PodcastDetail = () => {
                             >
                                 <div className="flex items-center gap-4">
                                     <button
-                                        onClick={() => playTrack({ ...episode, imageUrl: podcast.imageUrl, artist: podcast.host })}
+                                        onClick={() => {
+                                            // Prepare all episodes with podcast metadata for the queue
+                                            const normalizedEpisodes = podcast.episodes.map(ep => ({
+                                                ...ep,
+                                                imageUrl: podcast.imageUrl,
+                                                artist: podcast.host
+                                            }));
+                                            playPlaylist(normalizedEpisodes, index);
+                                        }}
                                         className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center hover:scale-105 transition shadow-lg flex-shrink-0"
                                         disabled={isLoading && currentTrack?.id === episode.id}
                                     >

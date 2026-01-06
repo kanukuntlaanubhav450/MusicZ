@@ -14,7 +14,7 @@ const Search = () => {
     const [results, setResults] = useState({ tracks: [], podcasts: [] });
     const [loading, setLoading] = useState(false);
     const [trackToAdd, setTrackToAdd] = useState(null);
-    const { playTrack } = useAudio();
+    const { playPlaylist } = useAudio();
 
     // Debounce search term
     useEffect(() => {
@@ -87,8 +87,8 @@ const Search = () => {
                         <section className="mb-12">
                             <h3 className="text-2xl font-bold mb-6 border-l-4 border-green-500 pl-4">Tracks</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                {results.tracks.map((track) => (
-                                    <div key={track.id} onClick={() => playTrack(track)} className="bg-white/5 p-4 rounded-xl hover:bg-white/10 transition-colors shadow-lg group cursor-pointer relative">
+                                {results.tracks.map((track, index) => (
+                                    <div key={track.id} onClick={() => playPlaylist(results.tracks, index)} className="bg-white/5 p-4 rounded-xl hover:bg-white/10 transition-colors shadow-lg group cursor-pointer relative">
                                         <div className="relative mb-4 overflow-hidden rounded-lg aspect-square">
                                             <img src={track.imageUrl} alt={track.title} className="w-full h-full object-cover shadow-md group-hover:scale-105 transition-transform duration-300" />
                                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -117,8 +117,8 @@ const Search = () => {
                         <section>
                             <h3 className="text-2xl font-bold mb-6 border-l-4 border-blue-500 pl-4">Podcasts</h3>
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                                {results.podcasts.map((podcast) => (
-                                    <div key={podcast.id} onClick={() => playTrack(podcast)} className="bg-white/5 p-4 rounded-xl hover:bg-white/10 transition-colors shadow-lg group cursor-pointer relative">
+                                {results.podcasts.map((podcast, index) => (
+                                    <div key={podcast.id} onClick={() => playPlaylist(results.podcasts, index)} className="bg-white/5 p-4 rounded-xl hover:bg-white/10 transition-colors shadow-lg group cursor-pointer relative">
                                         <div className="relative mb-4 overflow-hidden rounded-lg aspect-square">
                                             <img
                                                 src={podcast.imageUrl}
